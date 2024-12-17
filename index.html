@@ -24,47 +24,37 @@
             padding: 10px 15px;
             cursor: pointer;
             border-radius: 5px;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #005fa3;
         }
-        .address-list {
+        textarea {
+            width: 100%;
+            height: 200px;
             margin-top: 20px;
-        }
-        .address {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
             padding: 10px;
-            background-color: #fff;
+            font-family: monospace;
+            font-size: 14px;
             border: 1px solid #ddd;
             border-radius: 5px;
-        }
-        .copy-btn {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .copy-btn:hover {
-            background-color: #218838;
+            resize: none;
         }
     </style>
 </head>
 <body>
     <h1>Address Extractor</h1>
-    <p>Upload a `.txt` file, and we'll extract all address values.</p>
+    <p>Upload a `.txt` file, and we'll extract all addresses.</p>
     <input type="file" id="fileInput" accept=".txt">
     <button id="extractBtn">Extract Addresses</button>
-    
-    <div class="address-list" id="addressList"></div>
+    <button id="copyBtn" style="display:none;">Copy All</button>
+    <textarea id="outputBox" placeholder="Extracted addresses will appear here..." readonly></textarea>
 
     <script>
         document.getElementById('extractBtn').addEventListener('click', () => {
             const fileInput = document.getElementById('fileInput');
-            const addressListDiv = document.getElementById('addressList');
+            const outputBox = document.getElementById('outputBox');
+            const copyBtn = document.getElementById('copyBtn');
 
             if (!fileInput.files.length) {
                 alert('Please upload a file first!');
@@ -77,15 +67,24 @@
             reader.onload = function(e) {
                 const content = e.target.result;
                 const allAddresses = extractAllAddresses(content);
-                
+
                 if (allAddresses.length > 0) {
-                    displayAddresses(allAddresses);
+                    outputBox.value = allAddresses.join('\n');
+                    copyBtn.style.display = 'inline-block';
                 } else {
-                    addressListDiv.innerHTML = '<p>No addresses found!</p>';
+                    outputBox.value = 'No addresses found!';
+                    copyBtn.style.display = 'none';
                 }
             };
 
             reader.readAsText(file);
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const outputBox = document.getElementById('outputBox');
+            outputBox.select();
+            document.execCommand('copy');
+            alert('All addresses copied to clipboard!');
         });
 
         function extractAllAddresses(text) {
@@ -99,31 +98,6 @@
             }
 
             return addresses;
-        }
-
-        function displayAddresses(addresses) {
-            const addressListDiv = document.getElementById('addressList');
-            addressListDiv.innerHTML = ''; // Clear previous content
-
-            addresses.forEach((address, index) => {
-                const addressDiv = document.createElement('div');
-                addressDiv.className = 'address';
-
-                addressDiv.innerHTML = `
-                    <span>${index + 1}. ${address}</span>
-                    <button class="copy-btn" onclick="copyToClipboard('${address}')">Copy</button>
-                `;
-
-                addressListDiv.appendChild(addressDiv);
-            });
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Address copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-            });
         }
     </script>
 </body>
