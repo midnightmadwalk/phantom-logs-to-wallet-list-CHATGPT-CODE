@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solana Address Extractor</title>
+    <title>Address Extractor</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -54,8 +54,8 @@
     </style>
 </head>
 <body>
-    <h1>Solana Address Extractor</h1>
-    <p>Upload a `.txt` file, and we'll extract all Solana addresses (addressType: "solana").</p>
+    <h1>Address Extractor</h1>
+    <p>Upload a `.txt` file, and we'll extract all address values.</p>
     <input type="file" id="fileInput" accept=".txt">
     <button id="extractBtn">Extract Addresses</button>
     
@@ -76,28 +76,29 @@
 
             reader.onload = function(e) {
                 const content = e.target.result;
-                const solanaAddresses = extractSolanaAddresses(content);
+                const allAddresses = extractAllAddresses(content);
                 
-                if (solanaAddresses.length > 0) {
-                    displayAddresses(solanaAddresses);
+                if (allAddresses.length > 0) {
+                    displayAddresses(allAddresses);
                 } else {
-                    addressListDiv.innerHTML = '<p>No Solana addresses found!</p>';
+                    addressListDiv.innerHTML = '<p>No addresses found!</p>';
                 }
             };
 
             reader.readAsText(file);
         });
 
-        function extractSolanaAddresses(text) {
-            const solanaAddresses = [];
-            const regex = /addressType:\s*["']solana["'].*?address:\s*["']([^"']+)["']/g;
+        function extractAllAddresses(text) {
+            // Regex to find all address values in quotes after "address:"
+            const addressRegex = /address:\s*["']([^"']+)["']/g;
+            const addresses = [];
             let match;
 
-            while ((match = regex.exec(text)) !== null) {
-                solanaAddresses.push(match[1]);
+            while ((match = addressRegex.exec(text)) !== null) {
+                addresses.push(match[1]); // Capture the address value
             }
 
-            return solanaAddresses;
+            return addresses;
         }
 
         function displayAddresses(addresses) {
