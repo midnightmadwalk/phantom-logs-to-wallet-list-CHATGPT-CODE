@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Address Extractor</title>
+    <title>Solana Address Extractor</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,12 +43,12 @@
     </style>
 </head>
 <body>
-    <h1>Address Extractor</h1>
-    <p>Upload a `.txt` file, and we'll extract all addresses.</p>
+    <h1>Solana Address Extractor</h1>
+    <p>Upload a `.txt` file, and we'll extract all Solana addresses (44-character alphanumeric addresses).</p>
     <input type="file" id="fileInput" accept=".txt">
-    <button id="extractBtn">Extract Addresses</button>
+    <button id="extractBtn">Extract Solana Addresses</button>
     <button id="copyBtn" style="display:none;">Copy All</button>
-    <textarea id="outputBox" placeholder="Extracted addresses will appear here..." readonly></textarea>
+    <textarea id="outputBox" placeholder="Extracted Solana addresses will appear here..." readonly></textarea>
 
     <script>
         document.getElementById('extractBtn').addEventListener('click', () => {
@@ -66,13 +66,13 @@
 
             reader.onload = function(e) {
                 const content = e.target.result;
-                const allAddresses = extractAllAddresses(content);
+                const solanaAddresses = extractSolanaAddresses(content);
 
-                if (allAddresses.length > 0) {
-                    outputBox.value = allAddresses.join('\n');
+                if (solanaAddresses.length > 0) {
+                    outputBox.value = solanaAddresses.join('\n');
                     copyBtn.style.display = 'inline-block';
                 } else {
-                    outputBox.value = 'No addresses found!';
+                    outputBox.value = 'No Solana addresses found!';
                     copyBtn.style.display = 'none';
                 }
             };
@@ -84,17 +84,17 @@
             const outputBox = document.getElementById('outputBox');
             outputBox.select();
             document.execCommand('copy');
-            alert('All addresses copied to clipboard!');
+            alert('All Solana addresses copied to clipboard!');
         });
 
-        function extractAllAddresses(text) {
-            // Regex to find all address values in quotes after "address:"
-            const addressRegex = /address:\s*["']([^"']+)["']/g;
+        function extractSolanaAddresses(text) {
+            // Regex to match 44-character Solana addresses (alphanumeric only)
+            const solanaRegex = /["']([1-9A-HJ-NP-Za-km-z]{32,44})["']/g;
             const addresses = [];
             let match;
 
-            while ((match = addressRegex.exec(text)) !== null) {
-                addresses.push(match[1]); // Capture the address value
+            while ((match = solanaRegex.exec(text)) !== null) {
+                addresses.push(match[1]); // Capture the Solana address
             }
 
             return addresses;
